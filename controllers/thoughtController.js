@@ -70,7 +70,7 @@ module.exports = {
         // .catch((err) => res.status(500).json(err));
     },
     // Delete a reaction by reactionId
-    deleteOneReaction(req, res) {
+    deleteReaction(req, res) {
         //TODO finish this
     }
 };
