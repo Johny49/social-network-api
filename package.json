@@ -2,7 +2,7 @@
     "name": "Social Network API",
     "version": "1.0.1",
     "description": "social network api using mongodb, mongoose, and express",
-    "main": "index.js",
+    "main": "server.js",
     "scripts": {
         "start": "node index",
         "dev": "nodemon index",

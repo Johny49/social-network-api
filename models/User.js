@@ -1,13 +1,32 @@
 const { Schema, model } = require('mongoose');
+const validateEmail = require('../utils/emailValidate');
 
-//Schema to create Thought model
-const userSchema = new Schema (
+//Schema to create User model
+const userSchema = new Schema(
     {
-        username: [{ type: String, required: true, unique: true, trim: true }]
+        username: { type: String, required: true, unique: true, trim: true },
+        email: {
+            type: String, required: true, unique: true, validate: {
+                validator: [validateEmail(v), `{VALUE} is not a valid email!`]
+            }
+        },
+        thoughts: [{ type: Schema.Types.ObjectId, ref: 'thought' }],
+        friends: [{ type: Schema.Types.ObjectId, ref: 'user' }],
     },
     {
-
+        toJSON: {
+            virtuals: true,
+        },
+        id: false,
     }
 );
+
+// Create a virtual property called 'friendCount' to return the number of friends in the user's friends array
+userSchema.virtual('friendCount').get(function () {
+    return this.friends.length;
+});
+
+// Initialize user model
+const User = model('user', userSchema);
 
 module.exports = User;
