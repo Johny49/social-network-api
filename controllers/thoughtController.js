@@ -57,8 +57,7 @@ module.exports = {
                     ? res.status(404).json({ message: 'No thought found with that ID.' })
                     : User.findOneAndUpdate(
                         { username: thought.username },
-                        { $pull: { thoughts: req.params.thoughtId } }
-                    )
+                        { $pull: { thoughts: req.params.thoughtId } })
                 )
             .then(() => res.json({ message: `Deleted thought ${req.params.thoughtId}` }))
             .catch((err) => res.status(500).json(err));
@@ -78,9 +77,8 @@ module.exports = {
         //TODO fix this => returns deleted message, but reaction still in reactions array
         Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
-            { $pull: { reactions: req.params.reactionId } },
-            { new: true }
-        )
+            { $pull: { reactions: { reactionId: req.params.reactionId } } },
+            { new: true })
         .then(() => res.json({ message: 'Deleted reaction' }))
         .catch((err) => res.status(500).json(err));
     }
