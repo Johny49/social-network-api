@@ -47,18 +47,21 @@ module.exports = {
     // Friends
     // POST to add a new friend to user's friend list
     addFriend(req, res) {
-        // TODO: finish this
-        // User.create(req.body)
-        // .then((user) => res.json(user))
-        // .catch((err) => res.status(500).json(err));
+        User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $push: { friends: req.params.friendId } },
+        { new: true })
+    .then((user) => res.json(user))
+    .catch((err) => res.status(500).json(err));
     },
 
     // DELETE to remove a friend from user's friend list
     removeFriend(req, res) {
-        // TODO: finish this
-        // User.findOneAndDelete({ _id: req.params.userId })
-
-        // .then(() => res.json({ message: `Deleted user ${user.name} and associated thoughts.` }))
-        // .catch((err) => res.status(500).json(err));
+        User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
+            { new: true })
+        .then(() => res.json({ message: `Removed friend ${req.params.friendId}.` }))
+        .catch((err) => res.status(500).json(err));
     },
 };
