@@ -74,7 +74,6 @@ module.exports = {
     },
     // Delete a reaction by reactionId
     deleteReaction(req, res) {
-        //TODO fix this => returns deleted message, but reaction still in reactions array
         Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
             { $pull: { reactions: { reactionId: req.params.reactionId } } },
