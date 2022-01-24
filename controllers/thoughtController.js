@@ -55,13 +55,12 @@ module.exports = {
             .then((thought) =>
                 !thought
                     ? res.status(404).json({ message: 'No thought found with that ID.' })
-                    : User.updateOne({
-                        //  _id: req.body.userId,
-                        // $pull: { _id: user.thoughts._id }
-                        // TODO: Update this
-                    })
+                    : User.findOneAndUpdate(
+                        { username: thought.username },
+                        { $pull: { thoughts: req.params.thoughtId } }
+                    )
                 )
-            .then(() => res.json({ message: `Deleted thought ${thought._id} and updated user ${thought.username}` }))
+            .then(() => res.json({ message: `Deleted thought ${req.params.thoughtId}` }))
             .catch((err) => res.status(500).json(err));
     },
     // Reactions
@@ -71,7 +70,7 @@ module.exports = {
             { _id: req.params.thoughtId },
             { $push: { reactions: req.body } },
             { new: true })
-        .then((thoughts) => res.json(thoughts))
+        .then((thought) => res.json(thought))
         .catch((err) => res.status(500).json(err));
     },
     // Delete a reaction by reactionId
@@ -79,7 +78,8 @@ module.exports = {
         //TODO fix this => returns deleted message, but reaction still in reactions array
         Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
-            { $pull: { reactions: req.params.reactionId } }
+            { $pull: { reactions: req.params.reactionId } },
+            { new: true }
         )
         .then(() => res.json({ message: 'Deleted reaction' }))
         .catch((err) => res.status(500).json(err));
