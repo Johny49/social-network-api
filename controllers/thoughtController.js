@@ -21,14 +21,24 @@ module.exports = {
     createThought(req, res) {
         Thought.create(req.body)
         // push to user's [thoughts]
-        userId = req.body.userId
             .then((thought) => {
-                User.updateOne(
-                    { _id: userId },
-                    { $set: user.thoughts.push(thought._id) })
+                return User.findOneAndUpdate(
+                    { _id: req.body.userId },
+                    { $push: { thoughts: thought._id } },
+                    { new: true });
             })
-            .then((user) => res.json(thought))
-            .catch((err) => res.status(500).json(err));
+            // if user does not exist
+            .then((user) =>
+            !user
+              ? res
+                  .status(404)
+                  .json({ message: 'Post created, but no user with that ID was found' })
+              : res.json('New thought created.')
+          )
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
     },
     // PUT to update a thought by _id
     updateThought(req, res) {
@@ -36,12 +46,11 @@ module.exports = {
             { _id: req.params.thoughtId },
             { $set: req.body })
         // push to user's [thoughts]
-        let userId = req.body.userId
-            .then((thought) => {
-                User.updateOne(
-                    { _id: userId },
-                    { $push: req.body._id.thoughts })
-            })
+            // .then((thought) => {
+            //     User.updateOne(
+            //         { _id: req.body.userId },
+            //         { $push: req.body._id.thoughts })
+            // })
             .then((thought) => res.json(thought))
             .catch((err) => res.status(500).json(err));
     },
@@ -50,7 +59,7 @@ module.exports = {
         Thought.findOneAndDelete({ _id: req.params.thoughtId })
             .then((thought) =>
                 !thought
-                    ? res.status(404).json({ message: 'No user found with that ID.' })
+                    ? res.status(404).json({ message: 'No thought found with that ID.' })
                     : User.updateOne({
                         //  _id: req.body.userId,
                         // $pull: { _id: user.thoughts._id }
