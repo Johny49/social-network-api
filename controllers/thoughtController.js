@@ -45,18 +45,13 @@ module.exports = {
         Thought.updateOne(
             { _id: req.params.thoughtId },
             { $set: req.body })
-        // push to user's [thoughts]
-            // .then((thought) => {
-            //     User.updateOne(
-            //         { _id: req.body.userId },
-            //         { $push: req.body._id.thoughts })
-            // })
             .then((thought) => res.json(thought))
             .catch((err) => res.status(500).json(err));
     },
     // DELETE a thought by _id
     deleteThought(req, res) {
         Thought.findOneAndDelete({ _id: req.params.thoughtId })
+        // pull from user's [thoughts]
             .then((thought) =>
                 !thought
                     ? res.status(404).json({ message: 'No thought found with that ID.' })
@@ -72,14 +67,21 @@ module.exports = {
     // Reactions
     // POST a new reaction that is stored in a thought's reactions array
     addReaction(req, res) {
-        // TODO: finish this
-        // Thought.findOneAndUpdate(
-            // { _id: req.params.thoughtId },
-            // { $push: req.body })
-        // .catch((err) => res.status(500).json(err));
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $push: { reactions: req.body } },
+            { new: true })
+        .then((thoughts) => res.json(thoughts))
+        .catch((err) => res.status(500).json(err));
     },
     // Delete a reaction by reactionId
     deleteReaction(req, res) {
-        //TODO finish this
+        //TODO fix this => returns deleted message, but reaction still in reactions array
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $pull: { reactions: req.params.reactionId } }
+        )
+        .then(() => res.json({ message: 'Deleted reaction' }))
+        .catch((err) => res.status(500).json(err));
     }
 };
