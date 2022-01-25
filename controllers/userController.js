@@ -35,12 +35,17 @@ module.exports = {
     // DELETE a user by _id
     deleteUser(req, res) {
         User.findOneAndDelete({ _id: req.params.userId })
-            .then((user) =>
-                !user
-                    ? res.status(404).json({ message: 'No user found with that ID.' })
-                    : Thought.deleteMany({ _id: { $in: user.thoughts } })
-            )
-            .then(() => res.json({ message: `Deleted user ${user.name} and associated thoughts.` }))
+            .then((user) => {
+                // if (!user) return res.status(404).json({ message: 'No user found with that ID.' })
+                // delete references to user in friend lists
+                User.updateMany({ _id: { $in: user.friends } },
+                    { $pull: { friends: req.params.userId } })
+                    .then(() => {
+                        // delete corresponding thoughts
+                        Thought.deleteMany({ username: user.username })
+                    })
+            })
+            .then(() => res.json({ message: `Deleted user ${req.params.userId} and associated thoughts.` }))
             .catch((err) => res.status(500).json(err));
     },
 
@@ -48,11 +53,11 @@ module.exports = {
     // POST to add a new friend to user's friend list
     addFriend(req, res) {
         User.findOneAndUpdate(
-        { _id: req.params.userId },
-        { $push: { friends: req.params.friendId } },
-        { new: true })
-    .then((user) => res.json(user))
-    .catch((err) => res.status(500).json(err));
+            { _id: req.params.userId },
+            { $push: { friends: req.params.friendId } },
+            { new: true })
+            .then((user) => res.json(user))
+            .catch((err) => res.status(500).json(err));
     },
 
     // DELETE to remove a friend from user's friend list
@@ -61,7 +66,7 @@ module.exports = {
             { _id: req.params.userId },
             { $pull: { friends: req.params.friendId } },
             { new: true })
-        .then(() => res.json({ message: `Removed friend ${req.params.friendId}.` }))
-        .catch((err) => res.status(500).json(err));
+            .then(() => res.json({ message: `Removed friend ${req.params.friendId}.` }))
+            .catch((err) => res.status(500).json(err));
     },
 };
