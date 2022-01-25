@@ -5,7 +5,6 @@ A social network API using a noSQL MongoDB, Mongoose ODM, and Express. js for ro
 * [Description](#description)
 * [Database Schema](#database-schema)
 * [List of API Routes](#list-of-api-routes)
-* [Screenshots](#screenshot)
 * [Installation](#installation)
 * [Usage](#usage)
 * [Link](#link)
@@ -16,11 +15,7 @@ A social network API using a noSQL MongoDB, Mongoose ODM, and Express. js for ro
 
 
 ## Description 
-A social network API using a noSQL MongoDB, Mongoose ODM, and Express. js for routing
-
-
-## Screenshots
-![Screenshot of app inital screen](./assets/readme-screenshot.png)
+A social network API using a noSQL MongoDB, Mongoose ODM, and Express. js for routing.  The database contains two collections - one to store users, an another to store the thoughts posted by users.  See below for the breakdown of the model.
 
 
 ## Database Model
@@ -82,7 +77,7 @@ Calls to the api can be made using Postman or Insomnia.
 
 
 ## Link
-[Video Walkthrough](#TODO - add this)
+[Video Walkthrough](https://drive.google.com/file/d/1RmTHzJUkE4UiTP2Yz9cxahjm-mofXRtI/view?usp=sharing)
 
 
 ## Code
@@ -104,4 +99,5 @@ Created by [@johny49](https://github.com/Johny49/) - feel free to contact me!
 ## Project Status
 Project is: in development 
 Potential future improvements include:
-* 
+* front end and mobile app
+* more robust user profile with picture/avatar and other info

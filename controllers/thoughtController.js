@@ -4,6 +4,7 @@ module.exports = {
     // GET all thoughts
     getThoughts(req, res) {
         Thought.find({})
+            .select(-'__v')
             .then((thoughts) => res.json(thoughts))
             .catch((err) => res.status(500).json(err));
     },
@@ -20,7 +21,7 @@ module.exports = {
     // POST a new thought and push to the user's thoughts array
     createThought(req, res) {
         Thought.create(req.body)
-        // push to user's [thoughts]
+            // push to user's [thoughts]
             .then((thought) => {
                 return User.findOneAndUpdate(
                     { _id: req.body.userId },
@@ -29,12 +30,12 @@ module.exports = {
             })
             // if user does not exist
             .then((user) =>
-            !user
-              ? res
-                  .status(404)
-                  .json({ message: 'Post created, but no user with that ID was found' })
-              : res.json('New thought created.')
-          )
+                !user
+                    ? res
+                        .status(404)
+                        .json({ message: 'Post created, but no user with that ID was found' })
+                    : res.json('New thought created.')
+            )
             .catch((err) => {
                 console.log(err);
                 res.status(500).json(err);
@@ -51,14 +52,14 @@ module.exports = {
     // DELETE a thought by _id
     deleteThought(req, res) {
         Thought.findOneAndDelete({ _id: req.params.thoughtId })
-        // pull from user's [thoughts]
+            // pull from user's [thoughts]
             .then((thought) =>
                 !thought
                     ? res.status(404).json({ message: 'No thought found with that ID.' })
                     : User.findOneAndUpdate(
                         { username: thought.username },
                         { $pull: { thoughts: req.params.thoughtId } })
-                )
+            )
             .then(() => res.json({ message: `Deleted thought ${req.params.thoughtId}` }))
             .catch((err) => res.status(500).json(err));
     },
@@ -69,8 +70,8 @@ module.exports = {
             { _id: req.params.thoughtId },
             { $push: { reactions: req.body } },
             { new: true })
-        .then((thought) => res.json(thought))
-        .catch((err) => res.status(500).json(err));
+            .then((thought) => res.json(thought))
+            .catch((err) => res.status(500).json(err));
     },
     // Delete a reaction by reactionId
     deleteReaction(req, res) {
@@ -78,7 +79,7 @@ module.exports = {
             { _id: req.params.thoughtId },
             { $pull: { reactions: { reactionId: req.params.reactionId } } },
             { new: true })
-        .then(() => res.json({ message: 'Deleted reaction' }))
-        .catch((err) => res.status(500).json(err));
+            .then(() => res.json({ message: 'Deleted reaction' }))
+            .catch((err) => res.status(500).json(err));
     }
 };
